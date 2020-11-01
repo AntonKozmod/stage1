@@ -47,6 +47,7 @@
             this.Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.label2 = new System.Windows.Forms.Label();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.textBoxBinCode = new System.Windows.Forms.RichTextBox();
             this.label8 = new System.Windows.Forms.Label();
             this.textBoxSecondErrors = new System.Windows.Forms.RichTextBox();
             this.label7 = new System.Windows.Forms.Label();
@@ -57,7 +58,6 @@
             this.label3 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
-            this.textBoxBinCode = new System.Windows.Forms.RichTextBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewTSI)).BeginInit();
@@ -140,7 +140,7 @@
             this.textBoxFirstErrors.Location = new System.Drawing.Point(6, 415);
             this.textBoxFirstErrors.Name = "textBoxFirstErrors";
             this.textBoxFirstErrors.ReadOnly = true;
-            this.textBoxFirstErrors.Size = new System.Drawing.Size(305, 123);
+            this.textBoxFirstErrors.Size = new System.Drawing.Size(299, 123);
             this.textBoxFirstErrors.TabIndex = 5;
             this.textBoxFirstErrors.Text = "";
             // 
@@ -248,6 +248,15 @@
             this.groupBox3.TabIndex = 3;
             this.groupBox3.TabStop = false;
             // 
+            // textBoxBinCode
+            // 
+            this.textBoxBinCode.Location = new System.Drawing.Point(7, 125);
+            this.textBoxBinCode.Name = "textBoxBinCode";
+            this.textBoxBinCode.ReadOnly = true;
+            this.textBoxBinCode.Size = new System.Drawing.Size(298, 227);
+            this.textBoxBinCode.TabIndex = 10;
+            this.textBoxBinCode.Text = "";
+            // 
             // label8
             // 
             this.label8.AutoSize = true;
@@ -262,7 +271,7 @@
             this.textBoxSecondErrors.Location = new System.Drawing.Point(7, 415);
             this.textBoxSecondErrors.Name = "textBoxSecondErrors";
             this.textBoxSecondErrors.ReadOnly = true;
-            this.textBoxSecondErrors.Size = new System.Drawing.Size(300, 123);
+            this.textBoxSecondErrors.Size = new System.Drawing.Size(298, 123);
             this.textBoxSecondErrors.TabIndex = 7;
             this.textBoxSecondErrors.Text = "";
             // 
@@ -339,15 +348,6 @@
             this.button2.TabIndex = 5;
             this.button2.Text = "Второй проход";
             this.button2.UseVisualStyleBackColor = true;
-            // 
-            // textBoxBinCode
-            // 
-            this.textBoxBinCode.Location = new System.Drawing.Point(7, 125);
-            this.textBoxBinCode.Name = "textBoxBinCode";
-            this.textBoxBinCode.ReadOnly = true;
-            this.textBoxBinCode.Size = new System.Drawing.Size(298, 227);
-            this.textBoxBinCode.TabIndex = 10;
-            this.textBoxBinCode.Text = "";
             // 
             // Form1
             // 

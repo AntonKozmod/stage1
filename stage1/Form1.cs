@@ -17,7 +17,8 @@ namespace stage1
             InitializeComponent();
         }
 
-        DataStorage dataStorage;
+        //DataStorage dataStorage;
+        List<string> sourceCodeLines;
 
         private void button1_Click(object sender, EventArgs e)
         {
@@ -25,11 +26,13 @@ namespace stage1
             button1.Enabled = false;
 
             //dataStorage = new DataStorage(textBoxSource, textBoxTKO, dataGridViewSupport, dataGridViewTSI, textBoxFirstErrors, textBoxSecondErrors, textBoxBinCode);
-
             //dataStorage.initializeFirst();
-        
 
+            textBoxSource.ReadOnly = true;
+            textBoxTKO.ReadOnly = true;
+            sourceCodeLines = textBoxSource.Lines.ToList();
 
+            
         }
     }
 }
