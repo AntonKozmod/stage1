@@ -17,10 +17,19 @@ namespace stage1
             InitializeComponent();
         }
 
+        DataStorage dataStorage;
+
         private void button1_Click(object sender, EventArgs e)
         {
             button2.Enabled = true;
             button1.Enabled = false;
+
+            //dataStorage = new DataStorage(textBoxSource, textBoxTKO, dataGridViewSupport, dataGridViewTSI, textBoxFirstErrors, textBoxSecondErrors, textBoxBinCode);
+
+            //dataStorage.initializeFirst();
+        
+
+
         }
     }
 }
