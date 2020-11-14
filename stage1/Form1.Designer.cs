@@ -101,7 +101,8 @@
             this.textBoxSource.Name = "textBoxSource";
             this.textBoxSource.Size = new System.Drawing.Size(299, 193);
             this.textBoxSource.TabIndex = 2;
-            this.textBoxSource.Text = "";
+            this.textBoxSource.Text = "Program START 100\nJMP L1\nA1 RESB 0A\nA2 RESW 10\nB1 WORD 100\nB2 BYTE 0F1\nS1 BYTE x\'" +
+    "2f4c0008\'\nS2 BYTE C\'HEL0_o\'\nL1 LOADR1 B1\nLOADR2 B2\nADD R1,R2\nSAVER1 B1\nEND 100";
             // 
             // label1
             // 

@@ -24,6 +24,8 @@ namespace stage1
 
             textBoxSource.ReadOnly = true;
             textBoxTKO.ReadOnly = true;
+            textBoxFirstErrors.Text = "";
+            textBoxSecondErrors.Text = "";
 
             FirstPass(textBoxSource.Lines.ToList());
 

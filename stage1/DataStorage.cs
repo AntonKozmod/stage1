@@ -14,10 +14,9 @@ namespace stage1
 
         private struct CodeLine // Строка исходного кода
         {
-            string Label;
-            string MKOP;
-            string FirstOperand;
-            string SecondOperand;
+            public string Label;
+            public string MKOP;
+            public string Operands;
         }
         BindingList<CodeLine> codeLines; // Список строк исходного кода
 
