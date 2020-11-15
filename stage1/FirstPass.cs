@@ -69,11 +69,11 @@ namespace stage1
                                 
                                 // Преобразуем в 10чную СС
                                 addressCounter = Convert.ToInt32(codeLine.FirstOperand, 16);
-                                startCounter = addressCounter;
+                                startAddress = addressCounter;
                                 
-                                if (startCounter == 0)
+                                if (startAddress == 0)
                                     throw new Exception("Адрес начала программы не может быть равен 0");
-                                if (startCounter > maxMemoryAdr)
+                                if (startAddress > maxMemoryAdr)
                                     throw new Exception("Адрес программы выходит за диапазон памяти");
 
                                 SupportLine supportLine = new SupportLine {
@@ -125,13 +125,13 @@ namespace stage1
                                     // если C, то это строка
                                     if (codeLine.FirstOperand[0].Equals('C'))
                                     {
-                                        string str = codeLine.FirstOperand.Substring(2, codeLine.FirstOperand.Length - 3);
-                                        addressCounter += str.Length;
                                         if (addressCounter > maxMemoryAdr)
                                             throw new Exception("Произошло переполнение памяти");
                                         SupportLine supportLine = new SupportLine();
                                         supportLine.FillSupportLine(GetAddressCounter(), codeLine.MKOP.ToUpper(), codeLine.FirstOperand, "");
                                         tableSupport.Add(supportLine);
+                                        string str = codeLine.FirstOperand.Substring(2, codeLine.FirstOperand.Length - 3);
+                                        addressCounter += str.Length;
                                     }
                                     // если X, то это шестнадцатеричное число
                                     else if (codeLine.FirstOperand[0].Equals('X'))
@@ -139,15 +139,13 @@ namespace stage1
                                         string str = codeLine.FirstOperand.Substring(2, codeLine.FirstOperand.Length - 3);
                                         if ((str.Length % 2) != 0)
                                             throw new Exception("Невозможно преобразовать BYTE: нечетное количество символов. Строка: " + codeLine.Label + " " + codeLine.MKOP + " " + codeLine.FirstOperand + " " + codeLine.SecondOperand);
-                                        addressCounter += str.Length / 2;
-                                        if (addressCounter > maxMemoryAdr)
-                                            throw new Exception("Произошло переполнение памяти");
                                         if (!Regex.IsMatch(codeLine.FirstOperand.ToUpper(), @"^[A-F0-9]+$"))
                                             throw new Exception("Шестнадцатеричное число введено неверно. Строка: " + codeLine.Label + " " + codeLine.MKOP + " " + codeLine.FirstOperand + " " + codeLine.SecondOperand);
 
                                         SupportLine supportLine = new SupportLine();
                                         supportLine.FillSupportLine(GetAddressCounter(), codeLine.MKOP.ToUpper(), codeLine.FirstOperand.ToUpper(), "");
                                         tableSupport.Add(supportLine);
+                                        addressCounter += str.Length / 2;
                                     }
                                     else
                                         throw new Exception("Ошибка ввода операнда в строке: " + codeLine.Label + " " + codeLine.MKOP + " " + codeLine.FirstOperand + " " + codeLine.SecondOperand);
@@ -155,10 +153,10 @@ namespace stage1
                                 // если там "?", то просто резервируем один байт
                                 else if (codeLine.FirstOperand.Equals("?"))
                                 {
-                                    addressCounter++;
                                     SupportLine supportLine = new SupportLine();
                                     supportLine.FillSupportLine(GetAddressCounter(), codeLine.MKOP.ToUpper(), codeLine.FirstOperand, "");
                                     tableSupport.Add(supportLine);
+                                    addressCounter++;
                                 }
                                 else
                                     throw new Exception("Ошибка ввода операнда в строке: " + codeLine.Label + " " + codeLine.MKOP + " " + codeLine.FirstOperand + " " + codeLine.SecondOperand);
@@ -167,17 +165,53 @@ namespace stage1
                             break;
                         case "RESB":
                             {
-
+                                int operand;
+                                if (!int.TryParse(codeLine.FirstOperand, out operand))
+                                    throw new Exception("Невозможно преобразовать в число. Строка: " + codeLine.Label + " " + codeLine.MKOP + " " + codeLine.FirstOperand + " " + codeLine.SecondOperand);
+                                if (operand <= 0)
+                                    throw new Exception("Указано недопустимое количество байт. Строка: " + codeLine.Label + " " + codeLine.MKOP + " " + codeLine.FirstOperand + " " + codeLine.SecondOperand);
+                                SupportLine supportLine = new SupportLine();
+                                supportLine.FillSupportLine(GetAddressCounter(), codeLine.MKOP.ToUpper(), codeLine.FirstOperand, "");
+                                tableSupport.Add(supportLine);
+                                addressCounter += operand;
                             }
                             break;
                         case "RESW":
                             {
-
+                                int operand;
+                                if (!int.TryParse(codeLine.FirstOperand, out operand))
+                                    throw new Exception("Ошибка ввода операнда в строке: " + codeLine.Label + " " + codeLine.MKOP + " " + codeLine.FirstOperand + " " + codeLine.SecondOperand);
+                                if (operand <= 0)
+                                    throw new Exception("Недопустимое количество слов. Строка: " + codeLine.Label + " " + codeLine.MKOP + " " + codeLine.FirstOperand + " " + codeLine.SecondOperand);
+                                SupportLine supportLine = new SupportLine();
+                                supportLine.FillSupportLine(GetAddressCounter(), codeLine.MKOP.ToUpper(), codeLine.FirstOperand, "");
+                                tableSupport.Add(supportLine);
+                                addressCounter += operand * 3;
                             }
                             break;
                         case "END":
                             {
-
+                                if (!StartFlag || EndFlag)
+                                    throw new Exception("Ошибка в директиве END");
+                                EndFlag = true;
+                                if (codeLine.FirstOperand == null)
+                                    endAddress = startAddress;
+                                else
+                                {
+                                    if (!Regex.IsMatch(codeLine.FirstOperand.ToUpper(), @"^[A-F0-9]+$"))
+                                        throw new Exception("Неверный адрес выхода из программы");
+                                    endAddress = Convert.ToInt32(codeLine.FirstOperand.ToUpper(), 16);
+                                    if (endAddress >= startAddress && endAddress <= addressCounter)
+                                        break;
+                                    else
+                                        throw new Exception("Неверный адрес выхода из программы");
+                                }
+                                // преобразуем обратно в 16 сс и допишем нули
+                                string endAddrStr = Convert.ToString(endAddress, 16);
+                                endAddrStr = new string('0', 6 - endAddrStr.Length) + endAddrStr;
+                                
+                                SupportLine supportLine = new SupportLine();
+                                supportLine.FillSupportLine("", codeLine.MKOP.ToUpper(), endAddress.ToString(), "");
                             }
                             break;
                     }
@@ -205,28 +239,52 @@ namespace stage1
                 // Разбиваем на 3 составляющие (если 2 слова, то на первом месте будет пусто)
                 CodeLine codeLine = new CodeLine();
                 string[] x = el.Split(' ');
+                if (x.Length == 1)
+                {
+                    codeLine.Label = null;
+                    codeLine.MKOP = x[0];
+                    codeLine.FirstOperand = codeLine.SecondOperand = null;
+                }
                 if (x.Length == 2)
                 {
                     codeLine.Label = null;
                     codeLine.MKOP = x[0];
-                    codeLine.FirstOperand = x[1].Split(',')[0];
-                    codeLine.SecondOperand = x[1].Split(',')[1];
+                    string[] opernads = x[1].Split(',');
+                    if (opernads.Length == 1)
+                    {
+                        codeLine.FirstOperand = opernads[0];
+                        codeLine.SecondOperand = null;
+                    }
+                    else if (opernads.Length == 2)
+                    {
+                        codeLine.FirstOperand = opernads[0];
+                        codeLine.SecondOperand = opernads[1];
+                    }
+                    else
+                        throw new Exception("Ошибка ввода операндов. Строка: " + codeLine.Label + " " + codeLine.MKOP + " " + codeLine.FirstOperand + " " + codeLine.SecondOperand);
                 }
                 else if (x.Length == 3)
                 {
                     codeLine.Label = x[0];
                     codeLine.MKOP = x[1];
-                    codeLine.FirstOperand = x[2].Split(',')[0];
-                    codeLine.SecondOperand = x[2].Split(',')[1];
+                    string[] opernads = x[2].Split(',');
+                    if (opernads.Length == 1)
+                    {
+                        codeLine.FirstOperand = opernads[0];
+                        codeLine.SecondOperand = null;
+                    }
+                    else if (opernads.Length == 2)
+                    {
+                        codeLine.FirstOperand = opernads[0];
+                        codeLine.SecondOperand = opernads[1];
+                    }
+                    else
+                        throw new Exception("Ошибка ввода операндов. Строка: " + codeLine.Label + " " + codeLine.MKOP + " " + codeLine.FirstOperand + " " + codeLine.SecondOperand);
                 }
                 else if (x.Length == 0)
-                {
                     continue;
-                }
                 else
-                {
                     throw new Exception("Обнаружена недопустимая команда: " + el + "\n");
-                }
                 cLines.Add(codeLine);
             }
             return cLines;

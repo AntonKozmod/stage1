@@ -13,7 +13,8 @@ namespace stage1
         // Класс хранит необходимую промежуточную информацию.
 
         private int addressCounter;
-        private int startCounter;
+        private int startAddress;
+        private int endAddress;
         private string programName;
 
         private bool StartFlag = false; // Директива "START" найдена
