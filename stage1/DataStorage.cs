@@ -12,37 +12,52 @@ namespace stage1
     {
         // Класс хранит необходимую промежуточную информацию.
 
-        private struct CodeLine // Строка исходного кода
+        private int addressCounter;
+        private int startCounter;
+        private string programName;
+
+        private bool StartFlag = false; // Директива "START" найдена
+        private bool EndFlag = false; // Директива "END" найдена
+
+        struct CodeLine // Строка исходного кода
         {
             public string Label;
             public string MKOP;
-            public string Operands;
+            public string FirstOperand;
+            public string SecondOperand;
         }
-        BindingList<CodeLine> codeLines; // Список строк исходного кода
+        private BindingList<CodeLine> codeLines; // Список строк исходного кода
 
         struct OperationCode // Строка таблицы кодов операций
         {
-            string MKOP;
-            UInt32 HexCode;
-            UInt32 CodeLength;
+            public string MKOP;
+            public UInt32 HexCode;
+            public UInt32 CodeLength;
         }
-        BindingList<OperationCode> operationCodes; // Список кодов операций
+        private BindingList<OperationCode> operationCodes; // Список кодов операций
 
-        private struct SymbolicName // Строка таблицы символьных имен
+        struct SymbolicName // Строка таблицы символьных имен
         {
-            string Name;
-            string Address;
+            public string Name;
+            public string Address;
         }
-        BindingList<SymbolicName> symbolicNames; // Список строк таблицы символьных имен
+        private BindingList<SymbolicName> tableSymbolicNames; // Список строк таблицы символьных имен
 
-        private struct SupportLine // Строка вспомогательной таблицы
+        struct SupportLine // Строка вспомогательной таблицы
         {
-            string Label;
-            string MKOP;
-            string FirstOperand;
-            string SecondOperand;
-        }
+            public string Label;
+            public string MKOP;
+            public string FirstOperand;
+            public string SecondOperand;
 
-        private List<OperationCode> directives;
+            public void FillSupportLine( string Label, string MKOP, string FirstOperand, string SecondOperand )
+            {
+                this.Label = Label;
+                this.MKOP = MKOP;
+                this.FirstOperand = FirstOperand;
+                this.SecondOperand = SecondOperand;
+            }
+        }
+        private BindingList<SupportLine> tableSupport;
     }
 }

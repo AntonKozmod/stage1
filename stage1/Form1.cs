@@ -17,6 +17,8 @@ namespace stage1
             InitializeComponent();
         }
 
+        private int maxMemoryAdr = 16777215;
+
         private void button1_Click(object sender, EventArgs e)
         {
             button2.Enabled = true;
@@ -27,7 +29,15 @@ namespace stage1
             textBoxFirstErrors.Text = "";
             textBoxSecondErrors.Text = "";
 
-            FirstPass(textBoxSource.Lines.ToList());
+
+            try
+            {
+                FirstPass(textBoxSource.Lines.ToList());
+            }
+            catch (Exception ex)
+            {
+                textBoxFirstErrors.Text += ex.Message + "\n";
+            }
 
         }
     }
