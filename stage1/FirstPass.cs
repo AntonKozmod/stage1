@@ -11,12 +11,18 @@ namespace stage1
 {
     public partial class Form1 : Form
     {
-        private void FirstPass(List<string> sourceCodeLines)
+        private void FirstPass(List<string> sourceCodeLines, List<string> sourceOperationCodesLines)
         {
             if (sourceCodeLines.Count() != 0)
                 codeLines = ToCodeLines(sourceCodeLines); // преобразуем исходный текст к списку команд, с которым можно работать
             else
                 throw new Exception("Исходный текст не задан");
+
+            if (sourceOperationCodesLines.Count() != 0) // преобразуем исходную таблицу кодов операций в списку структур, с которым можно работать
+                operationCodes = ToOperationCodes(sourceOperationCodesLines);
+            else
+                throw new Exception("Таблица кодов операций не задана");
+
 
             tableSymbolicNames = new BindingList<SymbolicName>(); // инициализируем таблицу символьных имен
             tableSupport = new BindingList<SupportLine>(); // инициализируем вспомогательную таблицу 
@@ -40,7 +46,7 @@ namespace stage1
                     {
                         SymbolicName symbolicName = new SymbolicName();
                         symbolicName.Name = codeLine.Label;
-                        symbolicName.Address = Convert.ToString(addressCounter, 16);
+                        symbolicName.Address = Convert.ToString(addressCounter, 16).ToUpper();
                         symbolicName.Address = new string('0', 6 - symbolicName.Address.Length) + symbolicName.Address; // дописываем нули
                         tableSymbolicNames.Add(symbolicName);
                     }
@@ -77,10 +83,10 @@ namespace stage1
                                     throw new Exception("Адрес программы выходит за диапазон памяти");
 
                                 SupportLine supportLine = new SupportLine {
-                                                                               Label = codeLine.Label,
-                                                                               MKOP = codeLine.MKOP,
-                                                                               FirstOperand = new string('0', 6 - codeLine.FirstOperand.Length) + codeLine.FirstOperand
-                                                                           };
+                                    Label = codeLine.Label,
+                                    MKOP = codeLine.MKOP,
+                                    FirstOperand = new string('0', 6 - codeLine.FirstOperand.Length) + codeLine.FirstOperand
+                                };
                                 tableSupport.Add(supportLine);
                                 programName = supportLine.Label;
                             }
@@ -139,7 +145,7 @@ namespace stage1
                                         string str = codeLine.FirstOperand.Substring(2, codeLine.FirstOperand.Length - 3);
                                         if ((str.Length % 2) != 0)
                                             throw new Exception("Невозможно преобразовать BYTE: нечетное количество символов. Строка: " + codeLine.Label + " " + codeLine.MKOP + " " + codeLine.FirstOperand + " " + codeLine.SecondOperand);
-                                        if (!Regex.IsMatch(codeLine.FirstOperand.ToUpper(), @"^[A-F0-9]+$"))
+                                        if (!Regex.IsMatch(str.ToUpper(), @"^[A-F0-9]+$"))
                                             throw new Exception("Шестнадцатеричное число введено неверно. Строка: " + codeLine.Label + " " + codeLine.MKOP + " " + codeLine.FirstOperand + " " + codeLine.SecondOperand);
 
                                         SupportLine supportLine = new SupportLine();
@@ -201,17 +207,15 @@ namespace stage1
                                     if (!Regex.IsMatch(codeLine.FirstOperand.ToUpper(), @"^[A-F0-9]+$"))
                                         throw new Exception("Неверный адрес выхода из программы");
                                     endAddress = Convert.ToInt32(codeLine.FirstOperand.ToUpper(), 16);
-                                    if (endAddress >= startAddress && endAddress <= addressCounter)
-                                        break;
-                                    else
+                                    if (endAddress < startAddress || endAddress > addressCounter)
                                         throw new Exception("Неверный адрес выхода из программы");
                                 }
                                 // преобразуем обратно в 16 сс и допишем нули
                                 string endAddrStr = Convert.ToString(endAddress, 16);
                                 endAddrStr = new string('0', 6 - endAddrStr.Length) + endAddrStr;
-                                
                                 SupportLine supportLine = new SupportLine();
-                                supportLine.FillSupportLine("", codeLine.MKOP.ToUpper(), endAddress.ToString(), "");
+                                supportLine.FillSupportLine("", codeLine.MKOP.ToUpper(), endAddrStr, "");
+                                tableSupport.Add(supportLine);
                             }
                             break;
                     }
@@ -219,7 +223,85 @@ namespace stage1
                 // значит это команда
                 else 
                 {
-
+                    OperationCode operationCode;
+                    if (!TkoContainsMkop(codeLine.MKOP.ToUpper(), out operationCode))
+                        throw new Exception("МКОП не найден в таблице кодов операций. Строка: " + codeLine.Label + " " + codeLine.MKOP + " " + codeLine.FirstOperand + " " + codeLine.SecondOperand);
+                    switch (operationCode.CodeLength)
+                    {
+                        case 1: // Длина команды 1
+                            {
+                                // Просто сдвигаем на два разряда влево, т.к. это число и адресация непосредственная
+                                int addrType = Convert.ToInt32(operationCode.HexCode, 16) * 4;
+                                // переводим обратно в 16 с.с.
+                                string mkop = Convert.ToString(addrType, 16);
+                                // Дописываем незначащие нули
+                                mkop = new string('0', 2 - mkop.Length) + mkop;
+                                SupportLine supportLine = new SupportLine();
+                                supportLine.FillSupportLine(GetAddressCounter(), mkop.ToUpper(), "", "");
+                                tableSupport.Add(supportLine);
+                                addressCounter++;
+                            }
+                            break;
+                        case 2: // Длина команды 2
+                            {
+                                int firstOperand;
+                                // Попробуем преобразовать операнд в число
+                                if (int.TryParse(codeLine.FirstOperand, out firstOperand))
+                                {
+                                    if (firstOperand < 0 || firstOperand > 255)
+                                        throw new Exception("Значение первого операнда вне допустимого диапазона. Строка: " + codeLine.Label + " " + codeLine.MKOP + " " + codeLine.FirstOperand + " " + codeLine.SecondOperand);
+                                    // Просто сдвигаем на два разряда влево, т.к. это число и адресация непосредственная
+                                    int addrType = Convert.ToInt32(operationCode.HexCode, 16) * 4;
+                                    string mkop = Convert.ToString(addrType, 16);
+                                    mkop = new string('0', 2 - mkop.Length) + mkop;
+                                    SupportLine supportLine = new SupportLine();
+                                    supportLine.FillSupportLine(GetAddressCounter(), mkop.ToUpper(), codeLine.FirstOperand, "");
+                                    tableSupport.Add(supportLine);
+                                    addressCounter += 2;
+                                }
+                                // Если в операнде не число, значит регистр
+                                else
+                                {
+                                    if ((!registers.Contains(codeLine.FirstOperand.ToUpper())) || (!registers.Contains(codeLine.SecondOperand.ToUpper())))
+                                        throw new Exception("Ошибка в операндах. Строка: " + codeLine.Label + " " + codeLine.MKOP + " " + codeLine.FirstOperand + " " + codeLine.SecondOperand);
+                                    // т.к. используются регистры, то это непосредственная адресация - сдвигаем на два разряда влево
+                                    int addrType = Convert.ToInt32(operationCode.HexCode, 16) * 4;
+                                    string mkop = Convert.ToString(addrType, 16);
+                                    mkop = new string('0', 2 - mkop.Length) + mkop;
+                                    SupportLine supportLine = new SupportLine();
+                                    supportLine.FillSupportLine(GetAddressCounter(), mkop.ToUpper(), codeLine.FirstOperand.ToUpper(), codeLine.SecondOperand.ToUpper());
+                                    tableSupport.Add(supportLine);
+                                    addressCounter += 2;
+                                }
+                            }
+                            break;
+                        case 3: // Длина команды 3
+                            {
+                                // Используется прямая адресация
+                                int addrType = Convert.ToInt32(operationCode.HexCode, 16) * 4 + 1;
+                                string mkop = Convert.ToString(addrType, 16);
+                                mkop = new string('0', 2 - mkop.Length) + mkop;
+                                SupportLine supportLine = new SupportLine();
+                                supportLine.FillSupportLine(GetAddressCounter(), mkop.ToUpper(), codeLine.FirstOperand, "");
+                                tableSupport.Add(supportLine);
+                                addressCounter += 3;
+                            }
+                            break;
+                        case 4: // Длина команды 4
+                            {
+                                // Используется прямая адресация
+                                int addrType = Convert.ToInt32(operationCode.HexCode, 16) * 4 + 1;
+                                string mkop = Convert.ToString(addrType, 16);
+                                mkop = new string('0', 2 - mkop.Length) + mkop;
+                                SupportLine supportLine = new SupportLine();
+                                supportLine.FillSupportLine(GetAddressCounter(), mkop.ToUpper(), codeLine.FirstOperand, codeLine.SecondOperand);
+                                tableSupport.Add(supportLine);
+                                addressCounter += 4;
+                            }
+                            break;
+                        default:
+                            throw new Exception("Превышен размер команды");
+                    }
                 }
 
                 // проверка памяти
@@ -290,11 +372,57 @@ namespace stage1
             return cLines;
         }
 
+        private BindingList<OperationCode> ToOperationCodes(List<string> sourceOperationCodes)
+        {
+            BindingList<OperationCode> tkoLines = new BindingList<OperationCode>();
+            foreach (string el in sourceOperationCodes)
+            {
+                // Разбиваем на 3 составляющие
+                string[] x = el.Split(' ');
+                
+                try
+                {
+                    if (x.Length < 3)
+                        throw new Exception("Ошибка в таблице кодов операций. Строка: " + el);
+                    if (!Regex.IsMatch(x[1].ToUpper(), @"^[A-F0-9]+$"))
+                        throw new Exception("Ошибка кода операции в строке: " + el);
+                    int num;
+                    if (!int.TryParse(x[2], out num) || num < 0 || num > 4)
+                        throw new Exception("Ошибка длины операции в строке: " + el);
+                    OperationCode operationCode = new OperationCode
+                    {
+                        MKOP = x[0].ToUpper(),
+                        HexCode = x[1].ToUpper(),
+                        CodeLength = num
+                    };
+                    tkoLines.Add(operationCode);
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(ex.Message);
+                }
+                
+            }
+            return tkoLines;
+        }
+
         private bool TsiContainsName (string name)
         {
             foreach (SymbolicName symbolicName in tableSymbolicNames)
                 if (symbolicName.Name.Equals(name))
                     return true;
+            return false;
+        }
+
+        private bool TkoContainsMkop (string MKOP, out OperationCode operationCode)
+        {
+            operationCode = new OperationCode { MKOP = null, HexCode = null, CodeLength = 0 };
+            foreach (OperationCode oc in operationCodes)
+                if (oc.MKOP.Equals(MKOP.ToUpper()))
+                {
+                    operationCode = oc;
+                    return true;
+                }
             return false;
         }
 
@@ -310,24 +438,8 @@ namespace stage1
 
         private string GetAddressCounter()
         {
-            string addr = Convert.ToString(addressCounter, 16);
+            string addr = Convert.ToString(addressCounter, 16).ToUpper();
             return new string('0', 6 - addr.Length) + addr;
         }
     }
 }
-
-/*
-Program START 100
-JMP L1
-A1 RESB 0A
-A2 RESW 10
-B1 WORD 100
-B2 BYTE 0F1
-S1 BYTE x'2f4c0008'
-S2 BYTE C'HEL0_o'
-L1 LOADR1 B1
-LOADR2 B2
-ADD R1,R2
-SAVER1 B1
-END 100
-*/

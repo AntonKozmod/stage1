@@ -32,11 +32,19 @@ namespace stage1
 
             try
             {
-                FirstPass(textBoxSource.Lines.ToList());
+                FirstPass(textBoxSource.Lines.ToList(), textBoxTKO.Lines.ToList());
+                dataGridViewSupport.DataSource = tableSupport;
+                dataGridViewTSI.DataSource = tableSymbolicNames;
             }
             catch (Exception ex)
             {
                 textBoxFirstErrors.Text += ex.Message + "\n";
+                button2.Enabled = false;
+                button1.Enabled = true;
+                textBoxSource.ReadOnly = false;
+                textBoxTKO.ReadOnly = false;
+                StartFlag = false;
+                EndFlag = false;
             }
 
         }
