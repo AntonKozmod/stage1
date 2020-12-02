@@ -324,6 +324,8 @@ namespace stage1
             BindingList<CodeLine> cLines = new BindingList<CodeLine>();
             foreach (string el in sourceCodeLines)
             {
+                if (el.Length == 0)
+                    continue;
                 // Разбиваем на 3 составляющие (если 2 слова, то на первом месте будет пусто)
                 CodeLine codeLine = new CodeLine();
                 string[] x = el.Split(' ');
@@ -383,6 +385,8 @@ namespace stage1
             BindingList<OperationCode> tkoLines = new BindingList<OperationCode>();
             foreach (string el in sourceOperationCodes)
             {
+                if (el.Length == 0)
+                    continue;
                 // Разбиваем на 3 составляющие
                 string[] x = el.Split(' ');
                 

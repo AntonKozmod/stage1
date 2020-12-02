@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,6 +16,7 @@ namespace stage1
         public Form1()
         {
             InitializeComponent();
+            buttonUpload_Click(new object(), new EventArgs());
         }
 
         private int maxMemoryAdr = 16777215;
@@ -54,7 +56,6 @@ namespace stage1
                 StartFlag = false;
                 EndFlag = false;
             }
-
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -85,7 +86,49 @@ namespace stage1
 
         private void buttonUpload_Click(object sender, EventArgs e)
         {
+            string path = "source_data.txt";
+            if (!File.Exists(path))
+            {
+                MessageBox.Show("Файл данных \"source_data.txt\" не найден", "Ошибка загрузки из файла", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            string[] lines = File.ReadAllLines(path);
+            textBoxSource.Text = textBoxTKO.Text = "";
+            bool sourceCode = false; // true - если вводим строки исходного кода
+                                     // false - если вводим строки таблицы кодов операций
+            foreach (string line in lines)
+            {
+                if (line.Length == 0)
+                    continue;
+                if (!sourceCode && line.Equals("*source code*"))
+                {
+                    sourceCode = true;
+                    continue;
+                }
+                if (sourceCode && line.Equals("*table of operation codes*"))
+                {
+                    sourceCode = false;
+                    continue;
+                }
 
+                if (sourceCode)
+                {
+                    textBoxSource.AppendText(line + "\n");
+                }
+                else
+                {
+                    textBoxTKO.AppendText(line + "\n");
+                }
+
+            }
+        }
+
+        private void buttonSave_Click(object sender, EventArgs e)
+        {
+            string path = "source_data.txt";
+            string text = "*source code*\n" + textBoxSource.Text + "\n*table of operation codes*\n" + textBoxTKO.Text;
+            File.Delete(path);
+            File.AppendAllText(path, text);
         }
     }
 }

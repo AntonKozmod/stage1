@@ -80,7 +80,7 @@
             this.textBoxTKO.Name = "textBoxTKO";
             this.textBoxTKO.Size = new System.Drawing.Size(243, 193);
             this.textBoxTKO.TabIndex = 4;
-            this.textBoxTKO.Text = "JMP 01 4\nLOADR1 02 4\nLOADR2 03 4\nADD 04 2\nSAVER1 05 4\nINT 06 2";
+            this.textBoxTKO.Text = "";
             // 
             // label4
             // 
@@ -97,9 +97,7 @@
             this.textBoxSource.Name = "textBoxSource";
             this.textBoxSource.Size = new System.Drawing.Size(243, 294);
             this.textBoxSource.TabIndex = 2;
-            this.textBoxSource.Text = "Program START 100\nJMP L1\nA1 RESB 10\nA2 RESW 20\nB1 WORD 40\nB2 BYTE X\"2F4C008A\"\nB3 " +
-    "BYTE C\"Hello!\"\nB4 BYTE 12\nL1 LOADR1 B1\nLOADR2 B4\nADD R1,R2\nSAVER1 B1\nINT FF\nEND " +
-    "100";
+            this.textBoxSource.Text = "";
             // 
             // label1
             // 
@@ -321,6 +319,7 @@
             this.buttonSave.TabIndex = 7;
             this.buttonSave.Text = "Сохранить в файл";
             this.buttonSave.UseVisualStyleBackColor = true;
+            this.buttonSave.Click += new System.EventHandler(this.buttonSave_Click);
             // 
             // Form1
             // 
