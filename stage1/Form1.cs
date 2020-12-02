@@ -22,30 +22,69 @@ namespace stage1
         private void button1_Click(object sender, EventArgs e)
         {
             button2.Enabled = true;
-            button1.Enabled = false;
 
-            textBoxSource.ReadOnly = true;
-            textBoxTKO.ReadOnly = true;
             textBoxFirstErrors.Text = "";
             textBoxSecondErrors.Text = "";
-
+            textBoxBinCode.Text = "";
+            errorDetected = false;
+            errors = "";
+            StartFlag = false;
+            EndFlag = false;
 
             try
             {
                 FirstPass(textBoxSource.Lines.ToList(), textBoxTKO.Lines.ToList());
-                dataGridViewSupport.DataSource = tableSupport;
-                dataGridViewTSI.DataSource = tableSymbolicNames;
+                if (errorDetected)
+                {
+                    textBoxFirstErrors.Text += errors;
+                    button2.Enabled = false;
+                    StartFlag = false;
+                    EndFlag = false;
+                }
+                else
+                {
+                    dataGridViewSupport.DataSource = tableSupport;
+                    dataGridViewTSI.DataSource = tableSymbolicNames;
+                }
             }
             catch (Exception ex)
             {
-                textBoxFirstErrors.Text += ex.Message + "\n";
+                textBoxFirstErrors.Text += errors + "\n" + "Необработанное исключение: " + ex.Message + "\n";
                 button2.Enabled = false;
-                button1.Enabled = true;
-                textBoxSource.ReadOnly = false;
-                textBoxTKO.ReadOnly = false;
                 StartFlag = false;
                 EndFlag = false;
             }
+
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            button2.Enabled = false;
+
+            textBoxSecondErrors.Text = "";
+            errorDetected = false;
+            errors = "";
+            StartFlag = false;
+            EndFlag = false;
+
+            try
+            {
+                SecondPass();
+                if (errorDetected)
+                {
+                    textBoxSecondErrors.Text += errors;
+                    button2.Enabled = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                textBoxFirstErrors.Text += errors + "\n" + "Необработанное исключение: " + ex.Message + "\n";
+                button2.Enabled = false;
+            }
+        }
+
+        private void buttonUpload_Click(object sender, EventArgs e)
+        {
 
         }
     }

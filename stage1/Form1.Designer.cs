@@ -38,7 +38,13 @@
             this.textBoxFirstErrors = new System.Windows.Forms.RichTextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.dataGridViewTSI = new System.Windows.Forms.DataGridView();
+            this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewSupport = new System.Windows.Forms.DataGridView();
+            this.Label = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.label2 = new System.Windows.Forms.Label();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.textBoxBinCode = new System.Windows.Forms.RichTextBox();
@@ -47,12 +53,8 @@
             this.label7 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
-            this.Label = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.buttonUpload = new System.Windows.Forms.Button();
+            this.buttonSave = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewTSI)).BeginInit();
@@ -96,8 +98,8 @@
             this.textBoxSource.Size = new System.Drawing.Size(243, 294);
             this.textBoxSource.TabIndex = 2;
             this.textBoxSource.Text = "Program START 100\nJMP L1\nA1 RESB 10\nA2 RESW 20\nB1 WORD 40\nB2 BYTE X\"2F4C008A\"\nB3 " +
-    "BYTE C\"Hello!\"\nB4 BYTE 12\nL1 LOADR1 B1\nLOADR2 B4\nADD R1,R2\nSAVER1 B1\nINT 200\nEND" +
-    " 100";
+    "BYTE C\"Hello!\"\nB4 BYTE 12\nL1 LOADR1 B1\nLOADR2 B4\nADD R1,R2\nSAVER1 B1\nINT FF\nEND " +
+    "100";
             // 
             // label1
             // 
@@ -133,10 +135,10 @@
             // 
             // textBoxFirstErrors
             // 
-            this.textBoxFirstErrors.Location = new System.Drawing.Point(85, 415);
+            this.textBoxFirstErrors.Location = new System.Drawing.Point(6, 415);
             this.textBoxFirstErrors.Name = "textBoxFirstErrors";
             this.textBoxFirstErrors.ReadOnly = true;
-            this.textBoxFirstErrors.Size = new System.Drawing.Size(251, 123);
+            this.textBoxFirstErrors.Size = new System.Drawing.Size(422, 123);
             this.textBoxFirstErrors.TabIndex = 5;
             this.textBoxFirstErrors.Text = "";
             // 
@@ -163,6 +165,22 @@
             this.dataGridViewTSI.Size = new System.Drawing.Size(251, 152);
             this.dataGridViewTSI.TabIndex = 3;
             // 
+            // dataGridViewTextBoxColumn1
+            // 
+            this.dataGridViewTextBoxColumn1.DataPropertyName = "Name";
+            this.dataGridViewTextBoxColumn1.HeaderText = "Column1";
+            this.dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
+            this.dataGridViewTextBoxColumn1.ReadOnly = true;
+            this.dataGridViewTextBoxColumn1.Width = 115;
+            // 
+            // dataGridViewTextBoxColumn2
+            // 
+            this.dataGridViewTextBoxColumn2.DataPropertyName = "Address";
+            this.dataGridViewTextBoxColumn2.HeaderText = "Column2";
+            this.dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
+            this.dataGridViewTextBoxColumn2.ReadOnly = true;
+            this.dataGridViewTextBoxColumn2.Width = 115;
+            // 
             // dataGridViewSupport
             // 
             this.dataGridViewSupport.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
@@ -178,6 +196,34 @@
             this.dataGridViewSupport.RowHeadersVisible = false;
             this.dataGridViewSupport.Size = new System.Drawing.Size(422, 193);
             this.dataGridViewSupport.TabIndex = 2;
+            // 
+            // Label
+            // 
+            this.Label.DataPropertyName = "Label";
+            this.Label.HeaderText = "Label";
+            this.Label.Name = "Label";
+            this.Label.ReadOnly = true;
+            // 
+            // Column2
+            // 
+            this.Column2.DataPropertyName = "MKOP";
+            this.Column2.HeaderText = "MKOP";
+            this.Column2.Name = "Column2";
+            this.Column2.ReadOnly = true;
+            // 
+            // Column3
+            // 
+            this.Column3.DataPropertyName = "FirstOperand";
+            this.Column3.HeaderText = "FirstOperand";
+            this.Column3.Name = "Column3";
+            this.Column3.ReadOnly = true;
+            // 
+            // Column4
+            // 
+            this.Column4.DataPropertyName = "SecondOperand";
+            this.Column4.HeaderText = "SecondOperand";
+            this.Column4.Name = "Column4";
+            this.Column4.ReadOnly = true;
             // 
             // label2
             // 
@@ -238,7 +284,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(18, 562);
+            this.button1.Location = new System.Drawing.Point(591, 562);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(104, 23);
             this.button1.TabIndex = 4;
@@ -249,62 +295,40 @@
             // button2
             // 
             this.button2.Enabled = false;
-            this.button2.Location = new System.Drawing.Point(335, 562);
+            this.button2.Location = new System.Drawing.Point(709, 562);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(104, 23);
             this.button2.TabIndex = 5;
             this.button2.Text = "Второй проход";
             this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
-            // Label
+            // buttonUpload
             // 
-            this.Label.DataPropertyName = "Label";
-            this.Label.HeaderText = "Label";
-            this.Label.Name = "Label";
-            this.Label.ReadOnly = true;
+            this.buttonUpload.Location = new System.Drawing.Point(18, 562);
+            this.buttonUpload.Name = "buttonUpload";
+            this.buttonUpload.Size = new System.Drawing.Size(117, 23);
+            this.buttonUpload.TabIndex = 6;
+            this.buttonUpload.Text = "Загрузить из файла";
+            this.buttonUpload.UseVisualStyleBackColor = true;
+            this.buttonUpload.Click += new System.EventHandler(this.buttonUpload_Click);
             // 
-            // Column2
+            // buttonSave
             // 
-            this.Column2.DataPropertyName = "MKOP";
-            this.Column2.HeaderText = "MKOP";
-            this.Column2.Name = "Column2";
-            this.Column2.ReadOnly = true;
-            // 
-            // Column3
-            // 
-            this.Column3.DataPropertyName = "FirstOperand";
-            this.Column3.HeaderText = "FirstOperand";
-            this.Column3.Name = "Column3";
-            this.Column3.ReadOnly = true;
-            // 
-            // Column4
-            // 
-            this.Column4.DataPropertyName = "SecondOperand";
-            this.Column4.HeaderText = "SecondOperand";
-            this.Column4.Name = "Column4";
-            this.Column4.ReadOnly = true;
-            // 
-            // dataGridViewTextBoxColumn1
-            // 
-            this.dataGridViewTextBoxColumn1.DataPropertyName = "Name";
-            this.dataGridViewTextBoxColumn1.HeaderText = "Column1";
-            this.dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
-            this.dataGridViewTextBoxColumn1.ReadOnly = true;
-            this.dataGridViewTextBoxColumn1.Width = 115;
-            // 
-            // dataGridViewTextBoxColumn2
-            // 
-            this.dataGridViewTextBoxColumn2.DataPropertyName = "Address";
-            this.dataGridViewTextBoxColumn2.HeaderText = "Column2";
-            this.dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
-            this.dataGridViewTextBoxColumn2.ReadOnly = true;
-            this.dataGridViewTextBoxColumn2.Width = 115;
+            this.buttonSave.Location = new System.Drawing.Point(147, 562);
+            this.buttonSave.Name = "buttonSave";
+            this.buttonSave.Size = new System.Drawing.Size(114, 23);
+            this.buttonSave.TabIndex = 7;
+            this.buttonSave.Text = "Сохранить в файл";
+            this.buttonSave.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(964, 590);
+            this.Controls.Add(this.buttonSave);
+            this.Controls.Add(this.buttonUpload);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.groupBox3);
@@ -351,6 +375,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column4;
+        private System.Windows.Forms.Button buttonUpload;
+        private System.Windows.Forms.Button buttonSave;
     }
 }
 
